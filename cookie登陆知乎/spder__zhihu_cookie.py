@@ -13,8 +13,8 @@ headers = {
 }
 
 postdata = {
-    'password': 'hth739561472',  #填写密码
-    'account': '18512446195', #填写帐号
+    'password': '***',  #填写密码
+    'account': '***', #填写帐号
 }
 response = session.get("https://www.zhihu.com", headers=headers)
 soup = BeautifulSoup(response.content, "html.parser")
