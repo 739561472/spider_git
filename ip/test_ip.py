@@ -1,9 +1,7 @@
 # coding:utf-8
-import socket
-import urllib.request
-import urllib.error
 import pymongo
 import threading
+import requests
 
 from config import *
 
@@ -12,36 +10,44 @@ db = client[MONGO_DB]
 db_ip = db[MONGO_TABLE]
 
 proxy_ip = []
-id = []
+ip_id = []
 queryArgs = {}
-projectionFileds = {'ip': True, 'port': True,}
+projectionFileds = {'ip': True}
 for item in db_ip.find(queryArgs, projection=projectionFileds):
-    ip = {'HTTP'+'':''+item['ip']+':'+item['port']}
+    ip = {'HTTP': item['ip']}
     proxy_ip.append(ip)
-    id.append(item['_id'])
+    ip_id.append(item['_id'])
 lock = threading.Lock()
+
+
 def test(i):
-    socket.setdefaulttimeout(5)
-    url = 'https://www.lagou.com/jobs/list_'
+    headsers = {
+        'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
+    }
+    # url = 'http://ip.chinaz.com/getip.aspx'
+    # url = 'https://www.zhihu.com/'
+    url = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false&isSchoolJob=0'
     try:
-        #print(proxy_ip[i])
-        proxy_handler = urllib.request.ProxyHandler(proxy_ip[i])
-        opener = urllib.request.build_opener(proxy_handler)
-        opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-        urllib.request.install_opener(opener)
-        res = urllib.request.urlopen(url).read()
+        res = requests.get(url, headsers, proxies=proxy_ip[i], timeout=3)
+        if res:
+            print(i, '号ip可以使用', proxy_ip[i])
+        else:
+            lock.acquire()
+            print(i, '号ip不可以使用')
+            db_ip.remove({'_id': ip_id[i]})
+            lock.release()
+    except requests.ConnectTimeout:
         lock.acquire()
-        print(i,'号ip可以使用',id[i])
+        print(i, '号ip不可以使用')
+        db_ip.remove({'_id': ip_id[i]})
         lock.release()
-    except urllib.error.HTTPError as e:
-        lock.acquire()
-        print(i,'号ip不可以使用')
-        db_ip.remove({'_id': id[i]})
-        lock.release()
+
+
 test(1)
+
 threads = []
 for i in range(len(proxy_ip)):
-    thread = threading.Thread(target=test,args=[i])
+    thread = threading.Thread(target=test, args=[i])
     threads.append(thread)
     thread.start()
 # 阻塞主进程，等待所有子进程结束
