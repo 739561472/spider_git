@@ -1,0 +1,5 @@
+MONGO_URL = 'localhost'
+MONGO_DB = 'houseprice'
+MONGO_IP_DB = 'ip'
+MONGO_IP_TABLE = 'ip'
+MONGO_TABLE = 'houseprice'
