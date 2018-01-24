@@ -1,0 +1,7 @@
+MONGO_URL = 'localhost'
+MONGO_DB = 'zhihu'
+MONGO_USER_TABLE = 'zhihu_user'
+MONGO_TOPIC_TABLE = 'zhihu_topic'
+MONGO_TABLE = 'topic'
+MONGO_IP_TABLE = 'ip'
+MONGO_IP_DB = 'ip'
