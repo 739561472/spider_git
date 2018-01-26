@@ -1,5 +1,6 @@
 # coding:utf-8
 # import http.cookiejar
+from http import cookiejar
 import json
 import random
 import threading
@@ -18,11 +19,7 @@ client = MongoClient()
 db = client[MONGO_DB]
 session = requests.session()
 # 读取之前存储的cookie文件
-# session.cookies = http.cookiejar.LWPCookieJar(filename='cookie')
-# try:
-#     session.cookies.load(ignore_discard=True)
-# except requests.HTTPError:
-#     print('cookie未加载')
+
 
 
 class ZhihuTopicTask:
@@ -33,7 +30,7 @@ class ZhihuTopicTask:
             'accept-language': 'zh-CN,zh;q=0.9',
             'Cache-Control': 'max-age=0',
             'Connection': 'keep-alive',
-            'Cookie': '_zap=0ad13437-1f6b-4d51-90e5-5fa9b3ee60ea; d_c0="AECCMCl-1wyPTj22u6rDh3P9kEgxFV88TZE=|1513399908"; q_c1=5ddb74d22f8249cf84ebbacd65f69333|1515327515000|1512543978000; aliyungf_tc=AQAAAEpMnz1D5QUAe9rWcetpEZ8e7W6v; _xsrf=c1e02c91-092d-47ba-901c-2e2f1b531180; __utmc=51854390; __utmv=51854390.100-1|2=registration_date=20150622=1^3=entry_date=20150622=1; l_cap_id="NDE2MjFmNTBkMGFlNGEzOGE5ZTMwMzZhODM4NjUyNWU=|1516693141|bbbf191ea8664198154fb787afd24237a013e6f5"; r_cap_id="MjU1M2IwYTk5NGMxNGI3MDg3YjhiMTc3NTkyMWFiYzg=|1516693141|d673cf2dcd9a4315cb08ae0b51707834dd51f115"; cap_id="NDUzNTkyNDA2NWU0NGIwNTkxN2ZhODdiYWNmNTY4ODk=|1516693141|e98bebc5f2cc0fe3f5936b75fe9507a9b3297cfb"; capsion_ticket="2|1:0|10:1516696678|14:capsion_ticket|44:NjdlNzg4ODEyYzVkNDk5ZmEwYWJhMzM5NGFkMGYyNmE=|ff5398c4457d21e87123e4b3d3cf699209ce9a4a03c38e28fbdc914eaaf4aa03"; z_c0="2|1:0|10:1516696680|4:z_c0|92:Mi4xeXhiTUFRQUFBQUFBUUlJd0tYN1hEQ1lBQUFCZ0FsVk5hRUpVV3dEMXRxd18tMWZSTVZSdGE2SFNFSC1HZU8tVnF3|3cfb689793e97fc51441f21d3c48c04ba619f57bc63f8c3091c004456638e3ed"; __utma=51854390.1338944023.1513399910.1516674947.1516696703.8; __utmb=51854390.0.10.1516696703; __utmz=51854390.1516696703.8.6.utmcsr=zhihu.com|utmccn=(referral)|utmcmd=referral|utmcct=/',
+            'Cookie': '_zap=0ad13437-1f6b-4d51-90e5-5fa9b3ee60ea; d_c0="AECCMCl-1wyPTj22u6rDh3P9kEgxFV88TZE=|1513399908"; q_c1=5ddb74d22f8249cf84ebbacd65f69333|1515327515000|1512543978000; aliyungf_tc=AQAAAEpMnz1D5QUAe9rWcetpEZ8e7W6v; _xsrf=c1e02c91-092d-47ba-901c-2e2f1b531180; anc_cap_id=379df63bac7247faa82fe82938e6263e; l_cap_id="NzdjYjNjMTY4MTgyNGQ0OThhZDc2MzYzNmE3ODA0MDE=|1516967370|01b788dec03a26c09486e3c408dde96415c22594"; r_cap_id="OTEzZTg5MTkyNDVhNGU5YWE1YmUzNDcxNGFhMzY2MDM=|1516967370|be6c4aa5b774d0b1fbe698b2bd569f51847785d8"; cap_id="YjJiMDQzNGIzMWZlNDk0Yzg0ZGExMmQyMDQxMjBlNDc=|1516967370|7b5c3e8a9d8b8de653e64eed5502f0f4650dbd94"; capsion_ticket="2|1:0|10:1516967377|14:capsion_ticket|44:NDM3N2YwYmM1NGU4NGQ4YTg4MTAyMDkzOWY5NjU5OWE=|41550cedbdf560b0dd703ec5a98b5d0bbd41200e291e71a4f7c37b1ea9c0c653"; z_c0="2|1:0|10:1516967379|4:z_c0|92:Mi4xeXhiTUFRQUFBQUFBUUlJd0tYN1hEQ1lBQUFCZ0FsVk4wMk5ZV3dCemhSUDFWb2FqNHpZVzRNYVNpY3VDaFBRMHZn|2c5dccf35c5ce6af733dfada1c305827279cbd112df7b13134f2549b9a16799c"; __utma=51854390.1427180410.1516967390.1516967390.1516967390.1; __utmb=51854390.0.10.1516967390; __utmc=51854390; __utmz=51854390.1516967390.1.1.utmcsr=zhihu.com|utmccn=(referral)|utmcmd=referral|utmcct=/; __utmv=51854390.100-1|2=registration_date=20150622=1^3=entry_date=20150622=1',
             'host': 'www.zhihu.com',
             'upgrade-insecure-requests': '1',
             'X-UDID': 'AECCMCl-1wyPTj22u6rDh3P9kEgxFV88TZE='
@@ -62,6 +59,7 @@ class ZhihuTopicTask:
             if form_data:
                 response = session.post(url, headers=self.get_headers(url_), data=form_data, proxies=self.ip,
                                         timeout=5).content
+                print(response)
                 return json.loads(response)
             else:
                 response = session.get(url, headers=self.get_headers(url_), proxies=self.ip, timeout=5).content
@@ -86,7 +84,7 @@ class ZhihuTopicTask:
     def create_url(self, topic_id):
         # 构造一个请求头使用的url和三个数据接口的url
         self.url_ = 'https://www.zhihu.com/topic/{topic_id}/hot'.format(topic_id=topic_id)
-        self.url_c = 'https://www.zhihu.com/topic/{topic_id}/organize/entire'.format(topic_id=topic_id)
+        self.url_c = 'https://www.zhihu.com/topic/{topic_id}/children'.format(topic_id=topic_id)
         self.url_p = 'https://www.zhihu.com/api/v3/topics/{topic_id}/parent'.format(topic_id=topic_id)
         self.url_data = 'https://www.zhihu.com/api/v4/topics/{topic_id}'.format(topic_id=topic_id)
 
@@ -127,30 +125,14 @@ class ZhihuTopicTask:
                 return relative_list
         else:
             relative_list = []
-            if isinstance(data, dict)and'msg'in data.keys():
-                # 因为子话题数据在key'msg'中以列表形式存在，首先提取列表
-                data = data['msg']
-                # 列表中的[0]号数据时父话题id，所以不需要，取[1]数据
-                c_next_data, c_data = data[1]
-                # c_next_data = c_data
-                i = m = 0
-                # 子话题数目较多，所以网页中是ajax加载，十个一组
-                # c_next_data长度大于11时，说明存在第十一个数据为加载更多
-                while len(c_next_data) >= 11:
-                    # 提取加载更多的url
-                    url_next = 'https://www.zhihu.com/topic/{f_id}/organize/entire?child={c_id}&parent={f_id}'.format(
-                                c_id=c_next_data[10][0][2], f_id=c_next_data[10][0][3])
-                    data = self.get_ajax(url=url_next, url_=self.url_, form_data=self.form_data)
-                    if isinstance(data, dict) and 'msg' in data.keys():
-                        c_next_data = data['msg']
-                        c_next_data = c_next_data[1]
-                        c_data = c_data + c_next_data
-                        m += 1
-                # 处理完全部子话题后，会发现每一组都会有一项加载更多的内容，处于每组最后一项数据
-                for n in range(0, m):
-                    # 将加载更多这项数据删去
-                    del c_data[11*n+10-i]
-                    i += 1
+            if isinstance(data, dict)and'data'in data.keys():
+                c_data = data['data']
+                # 判断数据是否加载完毕
+                while data.get('paging').get('is_end') is False:
+                    # 提取下一页url
+                    data = self.get_ajax(url=data.get('paging').get('next'), url_=self.url_, form_data=self.form_data)
+                    if isinstance(data, dict) and 'data' in data.keys():
+                        c_data = c_data.join(data['data'])
                 for content in c_data:
                     # 查重
                     if not self.save_db.find_one({'_id': content[0][2]}):
@@ -197,20 +179,23 @@ threads = []
 
 
 def main():
-    # test_ip()
-    # 设置第一项为空，可以默认为本机ip，毕竟本机ip才是最好的
-    ip_list = ['']
-    # 提取代理ip
-    for i in db[MONGO_IP_TABLE].find():
-        ip_list.append(i)
+    session.cookies = cookiejar.LWPCookieJar(filename='cookie_zhihu')
+    session.cookies.load(ignore_discard=True)
+    # # test_ip()
+    # # 设置第一项为空，可以默认为本机ip，毕竟本机ip才是最好的
+    # ip_list = ['']
+    # # 提取代理ip
+    # for i in db[MONGO_IP_TABLE].find():
+    #     ip_list.append(i)
     zhihu = ZhihuTopicTask(lock=lock)
-    zhihu.controller('19550517')
+    zhihu.controller('19776749')
     # 判断队列是否为空
     while not q.empty():
         sleep(3)  # 休眠时间，防止给服务器造成过大压力（其实是为了保护自己--）
         for i in range(6):
             # 随机取一个ip，也可以改成每隔多少次换一个ip
-            ip = random.choice(ip_list)
+            # ip = random.choice(ip_list)
+            ip = None
             # 加入线程
             t = ThreadCrawl(q, lock, ip)
             # 启动！
