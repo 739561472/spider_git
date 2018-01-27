@@ -1,6 +1,5 @@
 # coding:utf-8
-# import http.cookiejar
-from http import cookiejar
+# from http import cookiejar
 import json
 import random
 import threading
@@ -10,7 +9,6 @@ from pymongo import MongoClient, errors
 import requests
 
 from config import *
-# from get_ip import *
 
 
 q = Queue()
@@ -18,19 +16,18 @@ lock = threading.Lock()
 client = MongoClient()
 db = client[MONGO_DB]
 session = requests.session()
-# 读取之前存储的cookie文件
-
 
 
 class ZhihuTopicTask:
     def __init__(self, lock, ip=None):
         self.save_db = db[MONGO_TOPIC_TABLE]# db[MONGO_TOPIC_TABLE]
         self.headers = {
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'accept': 'accept:application/json, text/plain, */*',
             'accept-language': 'zh-CN,zh;q=0.9',
+            'authorization': 'oauth c3cef7c66a1843f8b3a9e6a1e3160e20',
             'Cache-Control': 'max-age=0',
             'Connection': 'keep-alive',
-            'Cookie': '_zap=0ad13437-1f6b-4d51-90e5-5fa9b3ee60ea; d_c0="AECCMCl-1wyPTj22u6rDh3P9kEgxFV88TZE=|1513399908"; q_c1=5ddb74d22f8249cf84ebbacd65f69333|1515327515000|1512543978000; aliyungf_tc=AQAAAEpMnz1D5QUAe9rWcetpEZ8e7W6v; _xsrf=c1e02c91-092d-47ba-901c-2e2f1b531180; anc_cap_id=379df63bac7247faa82fe82938e6263e; l_cap_id="NzdjYjNjMTY4MTgyNGQ0OThhZDc2MzYzNmE3ODA0MDE=|1516967370|01b788dec03a26c09486e3c408dde96415c22594"; r_cap_id="OTEzZTg5MTkyNDVhNGU5YWE1YmUzNDcxNGFhMzY2MDM=|1516967370|be6c4aa5b774d0b1fbe698b2bd569f51847785d8"; cap_id="YjJiMDQzNGIzMWZlNDk0Yzg0ZGExMmQyMDQxMjBlNDc=|1516967370|7b5c3e8a9d8b8de653e64eed5502f0f4650dbd94"; capsion_ticket="2|1:0|10:1516967377|14:capsion_ticket|44:NDM3N2YwYmM1NGU4NGQ4YTg4MTAyMDkzOWY5NjU5OWE=|41550cedbdf560b0dd703ec5a98b5d0bbd41200e291e71a4f7c37b1ea9c0c653"; z_c0="2|1:0|10:1516967379|4:z_c0|92:Mi4xeXhiTUFRQUFBQUFBUUlJd0tYN1hEQ1lBQUFCZ0FsVk4wMk5ZV3dCemhSUDFWb2FqNHpZVzRNYVNpY3VDaFBRMHZn|2c5dccf35c5ce6af733dfada1c305827279cbd112df7b13134f2549b9a16799c"; __utma=51854390.1427180410.1516967390.1516967390.1516967390.1; __utmb=51854390.0.10.1516967390; __utmc=51854390; __utmz=51854390.1516967390.1.1.utmcsr=zhihu.com|utmccn=(referral)|utmcmd=referral|utmcct=/; __utmv=51854390.100-1|2=registration_date=20150622=1^3=entry_date=20150622=1',
+            'Cookie': '_zap=0ad13437-1f6b-4d51-90e5-5fa9b3ee60ea; d_c0="AECCMCl-1wyPTj22u6rDh3P9kEgxFV88TZE=|1513399908"; q_c1=5ddb74d22f8249cf84ebbacd65f69333|1515327515000|1512543978000; aliyungf_tc=AQAAAEpMnz1D5QUAe9rWcetpEZ8e7W6v; _xsrf=c1e02c91-092d-47ba-901c-2e2f1b531180; anc_cap_id=379df63bac7247faa82fe82938e6263e; __utmc=51854390; __utmv=51854390.100-1|2=registration_date=20150622=1^3=entry_date=20150622=1; l_cap_id="MzVlMmYwNzcyYTAwNDgyNTliYmZiY2U0OTEwYmM4NDA=|1516968241|98d6e55c113ee21bcc58946f42ad250ac7869461"; r_cap_id="MDFmNmYzMmQ1OTkwNGU5NTkzYzc1ZTVkMjBiYTQ2N2E=|1516968241|29f41ee1c2e1a76221403ee64fd1c7ab46eff2b3"; cap_id="YjY0NmJjMTQ4NmI4NDg3MDg0NzkwZjNmNTIyZTdiODQ=|1516968241|8251cb78de27be99fd237373f43d79e3bab28d21"; capsion_ticket="2|1:0|10:1516970322|14:capsion_ticket|44:ODQ0YWMzYTJlMjQzNDI5Mzk3YzFmOWZlMDYyMzI2ZDM=|61d103d1483ab7edb7b56f32063e9e2fe5ca08dce2352d020d1ae36cbcc08289"; __utma=51854390.1427180410.1516967390.1516967390.1516971796.2; __utmb=51854390.0.10.1516971796; __utmz=51854390.1516971796.2.2.utmcsr=zhihu.com|utmccn=(referral)|utmcmd=referral|utmcct=/',
             'host': 'www.zhihu.com',
             'upgrade-insecure-requests': '1',
             'X-UDID': 'AECCMCl-1wyPTj22u6rDh3P9kEgxFV88TZE='
@@ -43,7 +40,6 @@ class ZhihuTopicTask:
         ]
         self.lock = lock
         self.ip = ip
-        self.form_data = {'_xsrf': 'c1e02c91-092d-47ba-901c-2e2f1b531180'}
         self.url_, self.url_c, self.url_p, self.url_data = '', '', '', ''
 
     def get_headers(self, url_):
@@ -53,29 +49,25 @@ class ZhihuTopicTask:
         self.headers['User-Agent'] = user_agent
         return self.headers
 
-    def get_ajax(self, url, url_, form_data=None):
+    def get_ajax(self, url, url_):
         # 从接口获取ajax请求的数据，json.loads()解析
         try:
-            if form_data:
-                response = session.post(url, headers=self.get_headers(url_), data=form_data, proxies=self.ip,
-                                        timeout=5).content
-                print(response)
-                return json.loads(response)
-            else:
-                response = session.get(url, headers=self.get_headers(url_), proxies=self.ip, timeout=5).content
-                return json.loads(response)
-        # 捕获Internet异常，这里是因为出现的异常有点多-_-||，精确捕获很麻烦，代码好像要很多，所以就偷懒--
-        except Exception:
-            print('网络连接错误！')
-            # 若使用代理ip，出现异常后，更换ip，尝试再次获取数据
-            if self.ip:
-                self.exception_loop(url, form_data)
+            response = session.get(url, headers=self.get_headers(url_), proxies=self.ip, timeout=5).text
+            return json.loads(response)
+        # 捕获Internet异常，这里出现的异常有点多-_-||
+        except requests.HTTPError as e:
+            print(e)
+        except ConnectionResetError as e:
+            print(e)
+            # # 若使用代理ip，出现异常后，更换ip，尝试再次获取数据
+            # if self.ip:
+            self.exception_loop(url)
 
-    def exception_loop(self, url, form_data):
+    def exception_loop(self, url):
         # 读取一个新的代理ip
-        db[MONGO_IP_TABLE].delete_one({'https': self.ip['https']})
-        self.ip = db[MONGO_IP_TABLE].find_one()
-        self.get_ajax(url, self.url_, form_data)
+        # db[MONGO_IP_TABLE].delete_one({'https': self.ip['https']})
+        # self.ip = db[MONGO_IP_TABLE].find_one()
+        self.get_ajax(url, self.url_)
         # except requests.ConnectTimeout:
         #     print('代理ip延迟过高，请及时更换ip!')
         # except http.client.RemoteDisconnected:
@@ -84,9 +76,9 @@ class ZhihuTopicTask:
     def create_url(self, topic_id):
         # 构造一个请求头使用的url和三个数据接口的url
         self.url_ = 'https://www.zhihu.com/topic/{topic_id}/hot'.format(topic_id=topic_id)
-        self.url_c = 'https://www.zhihu.com/topic/{topic_id}/children'.format(topic_id=topic_id)
+        self.url_c = 'https://www.zhihu.com/api/v3/topics/{topic_id}/children'.format(topic_id=topic_id)
         self.url_p = 'https://www.zhihu.com/api/v3/topics/{topic_id}/parent'.format(topic_id=topic_id)
-        self.url_data = 'https://www.zhihu.com/api/v4/topics/{topic_id}'.format(topic_id=topic_id)
+        self.url_data = 'https://www.zhihu.com/api/v4/topics/{topic_id}?include=introduction%2Cquestions_count%2Cbest_answers_count%2Cfollowers_count%2Cis_following'.format(topic_id=topic_id)
 
     def get_data(self, url_, url_c=None, url_p=None, url_data=None):
         # 根据传入的url调用相应函数
@@ -94,7 +86,7 @@ class ZhihuTopicTask:
             data = self.get_ajax(url_data, url_)
             return self.parse(data, 0)
         elif url_c:
-            data = self.get_ajax(url_c, url_, form_data=self.form_data)
+            data = self.get_ajax(url_c, url_)
             return self.parse(data, 1)
         elif url_p:
             data = self.get_ajax(url_p, url_)
@@ -130,28 +122,26 @@ class ZhihuTopicTask:
                 # 判断数据是否加载完毕
                 while data.get('paging').get('is_end') is False:
                     # 提取下一页url
-                    data = self.get_ajax(url=data.get('paging').get('next'), url_=self.url_, form_data=self.form_data)
+                    data = self.get_ajax(url=data.get('paging').get('next'), url_=self.url_)
+                    print(data.get('paging').get('next'))
                     if isinstance(data, dict) and 'data' in data.keys():
-                        c_data = c_data.join(data['data'])
+                        c_data = c_data+data['data']
                 for content in c_data:
                     # 查重
-                    if not self.save_db.find_one({'_id': content[0][2]}):
-                        q.put(content[0][2])
-                    relative_list.append(content[0][1])
+                    if not self.save_db.find_one({'_id': content['id']}):
+                        q.put(content['id'])
+                    relative_list.append(content['name'])
                 return relative_list
 
     def save_to_mongo(self, topic, children, parent):
         # 将传入的各个数据，整理，然后存储到数据库中
         topic['children'] = children
         topic['parent'] = parent
-        # 这个时候，最好加锁，防止出现意外情况
-        self.lock.acquire()
         try:
             if self.save_db.insert(topic):
                 print('插入成功！')
         except errors.DuplicateKeyError:
             pass
-        self.lock.release()
 
     def controller(self, topic_id):
         # 制定函数执行流程
@@ -179,31 +169,36 @@ threads = []
 
 
 def main():
-    session.cookies = cookiejar.LWPCookieJar(filename='cookie_zhihu')
-    session.cookies.load(ignore_discard=True)
-    # # test_ip()
-    # # 设置第一项为空，可以默认为本机ip，毕竟本机ip才是最好的
+    # # 设置第一项为空，可以默认为本机ip，毕竟本机ip是最快的
     # ip_list = ['']
     # # 提取代理ip
     # for i in db[MONGO_IP_TABLE].find():
     #     ip_list.append(i)
-    zhihu = ZhihuTopicTask(lock=lock)
-    zhihu.controller('19776749')
+    if db[MONGO_BK_TABLE].find():
+        for token in db[MONGO_BK_TABLE].find():
+            q.put(token['token'])
+        db[MONGO_BK_TABLE].remove({})
+    else:
+        zhihu = ZhihuTopicTask(lock=lock)
+        zhihu.controller('19776751')  # 选择开始爬取话题
     # 判断队列是否为空
     while not q.empty():
-        sleep(3)  # 休眠时间，防止给服务器造成过大压力（其实是为了保护自己--）
-        for i in range(6):
-            # 随机取一个ip，也可以改成每隔多少次换一个ip
-            # ip = random.choice(ip_list)
-            ip = None
-            # 加入线程
-            t = ThreadCrawl(q, lock, ip)
-            # 启动！
-            t.start()
+        try:
+            sleep(1)  # 休眠时间，防止给服务器造成过大压力（其实是为了保护自己--）
+            for i in range(6):
+                # 随机取一个ip，也可以改成每隔多少次换一个ip
+                # ip = random.choice(ip_list)
+                t = ThreadCrawl(q, lock, ip=None)  # 加入线程
+                t.start()
+        except BaseException as e:
+            while not q.empty():
+                db[MONGO_BK_TABLE].insert({'token': q.get()})
+            print('stopping!', e)
+            break
     for t in threads:
-        # 阻塞线程，等待所有子线程结束后，在结束主线程
+        # 阻塞主线程，等待所有子线程结束后，结束主线程
         t.join()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
