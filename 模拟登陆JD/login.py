@@ -3,7 +3,7 @@ import requests
 from captcha import get_captcha
 from lxml import etree
 from config import *
-
+from JSEncrypt import JSEncrypt
 
 session = requests.session()
 
@@ -27,8 +27,8 @@ def login():
         'fp': FP,
         '_t': '_t',
         'loginType': 'f',
-        'loginname': '账号',
-        'nloginpwd': '加密后的密码',
+        'loginname': '18512446195',
+        'nloginpwd': JSEncrypt(input('请输入您的密码！')),
         'chkRememberMe': '',
         'authcode': get_captcha(uuid),
         'pubKey': PUBKEY,
@@ -36,7 +36,7 @@ def login():
     }
     # if authcode:
     #   form_data['authcode'] = get_captcha(uuid)
-    res = session.post(url=login_url, data=form_data, headers=l_headers).content
+    res = session.post(url=login_url, data=form_data, headers=l_headers).text
     print(res)
 
 
