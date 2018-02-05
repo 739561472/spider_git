@@ -27,7 +27,7 @@ def login():
         'fp': FP,
         '_t': '_t',
         'loginType': 'f',
-        'loginname': '18512446195',
+        'loginname': '',
         'nloginpwd': JSEncrypt(input('请输入您的密码！')),
         'chkRememberMe': '',
         'authcode': get_captcha(uuid),
