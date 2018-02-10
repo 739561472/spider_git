@@ -183,18 +183,12 @@ def main():
         zhihu.controller('19776751')  # 选择开始爬取话题
     # 判断队列是否为空
     while not q.empty():
-        try:
-            sleep(1)  # 休眠时间，防止给服务器造成过大压力（其实是为了保护自己--）
-            for i in range(6):
-                # 随机取一个ip，也可以改成每隔多少次换一个ip
-                # ip = random.choice(ip_list)
-                t = ThreadCrawl(q, lock, ip=None)  # 加入线程
-                t.start()
-        except BaseException as e:
-            while not q.empty():
-                db[MONGO_BK_TABLE].insert({'token': q.get()})
-            print('stopping!', e)
-            break
+        sleep(1)  # 休眠时间，防止给服务器造成过大压力（其实是为了保护自己--）
+        for i in range(6):
+            # 随机取一个ip，也可以改成每隔多少次换一个ip
+            # ip = random.choice(ip_list)
+            t = ThreadCrawl(q, lock, ip=None)  # 加入线程
+            t.start()
     for t in threads:
         # 阻塞主线程，等待所有子线程结束后，结束主线程
         t.join()
